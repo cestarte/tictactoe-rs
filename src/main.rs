@@ -85,30 +85,31 @@ impl Game {
             io::stdin().read_line(&mut input).unwrap();
             input = String::from(input.trim_end().to_uppercase());
 
-            // was the input a valid coordinate?
-            let re = Regex::new("^[0-3],[0-3]$").unwrap();
-            if !re.is_match(&input) {
+            if !is_input_format_acceptable(&input) {
                 println!("Invalid coordinate. Example: x,y like 2,3");
                 continue;
             }
 
-            // parse x & y
-            let input_split = input.split(",");
-            let coord_parts: Vec<&str> = input_split.collect();
-            let x:usize = coord_parts[0].parse().unwrap();
-            let y:usize = coord_parts[1].parse().unwrap();
+            let (x, y) = split_input_coordinate(&input);
 
-            // check if cell is empty
-            match self.board[y-1][x-1].state {
-                CellState::Empty => self.board[y-1][x-1].state = self.players[self.active_player].symbol,
-                _ => {
-                    println!("That coordinate already is already taken! Try again.");
-                    continue;
-                }
+            if !self.place_symbol_if_target_cell_available(y-1, x-1) {
+                println!("That coordinate already is already taken! Try again.");
+                continue;
             }
 
             done = true;
         }
+    }
+
+    fn place_symbol_if_target_cell_available(&mut self, x: usize, y: usize) -> bool {
+        let mut symbol_was_placed = false;
+
+        if self.board[y][x].state == CellState::Empty {
+            self.board[y][x].state = self.players[self.active_player].symbol;
+            symbol_was_placed = true;
+        }
+
+        symbol_was_placed
     }
 
     fn take_turn(&mut self) {
@@ -228,6 +229,20 @@ impl Game {
 
 }
 
+fn is_input_format_acceptable(input: &str) -> bool {
+    let re = Regex::new("^[0-3],[0-3]$").unwrap();
+    re.is_match(&input)
+}
+
+fn split_input_coordinate(input: &str) -> (usize, usize) {
+    let input_split = input.split(",");
+    let coord_parts: Vec<&str> = input_split.collect();
+    let x:usize = coord_parts[0].parse().unwrap();
+    let y:usize = coord_parts[1].parse().unwrap();
+
+    (x, y)
+}
+
 fn main() {
     let mut game = Game::new();
 
@@ -324,3 +339,42 @@ fn diagonal_win_top_right_to_bottom_left() {
     assert_eq!(true, game.diagonal_win_top_right_to_bottom_left());
 }
 
+#[test]
+fn active_player_defaults_to_0() {
+    let game = Game::new();
+
+    assert_eq!(0, game.active_player);
+}
+
+#[test]
+fn next_player_switches_from_1_to_0() {
+    let mut game = Game::new();
+    game.active_player = 0;
+    game.next_player();
+    assert_eq!(1, game.active_player);
+}
+
+#[test]
+fn next_player_switches_from_0_to_1() {
+    let mut game = Game::new();
+    game.active_player = 1;
+    game.next_player();
+    assert_eq!(0, game.active_player);
+}
+
+
+#[test]
+fn is_input_format_acceptable_test() {
+    assert_eq!(false, is_input_format_acceptable(""));
+    assert_eq!(false, is_input_format_acceptable("alksdjhf"));
+    assert_eq!(false, is_input_format_acceptable("x,y"));
+    assert_eq!(false, is_input_format_acceptable("1,,4"));
+    assert_eq!(false, is_input_format_acceptable("4,1"));
+    assert_eq!(true, is_input_format_acceptable("0,0"));
+    assert_eq!(true, is_input_format_acceptable("3,3"));
+}
+
+#[test]
+fn split_input_coordinate_test() {
+    assert_eq!((1,2), split_input_coordinate("1,2"));
+}
