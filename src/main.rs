@@ -23,7 +23,6 @@ impl fmt::Display for CellState {
 }
 
 struct Player {
-    id: u8,
     symbol: CellState,
 }
 
@@ -45,10 +44,8 @@ impl Game {
                 state: CellState::Empty,
             }; BOARD_SIZE]; BOARD_SIZE],
             players: [Player {
-                id: 1,
                 symbol: CellState::X,
             }, Player {
-                id: 2,
                 symbol: CellState::O,
             }],
 
@@ -153,7 +150,7 @@ impl Game {
                     //println!("{} at {},{} does not match {}", self.board[y][x].state, y,x, to_match);
                     break;
                 } else if x==BOARD_SIZE-1 {
-                    println!("There is a horizontal win!");
+                    println!("There is a horizontal win! Row {}", y+1);
                     return true;
                 }
             }
@@ -181,7 +178,7 @@ impl Game {
                         //println!("{} at {},{} does not match {}", self.board[y][x].state, y,x, to_match);
                         break;
                 } else if y==BOARD_SIZE-1 {
-                    println!("There is a vertical win!");
+                    println!("There is a vertical win! Col {}", x+1);
                     return true;
                 }
             }
