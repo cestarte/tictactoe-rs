@@ -1,6 +1,7 @@
 use std::fmt;
 use std::io;
 //use std::io::prelude::*;
+use regex::Regex;
 
 const BOARD_SIZE: usize = 3;
 
@@ -83,27 +84,37 @@ impl Game {
         }
     }
 
-    fn get_input(&self) {
-        let mut input = String::new();
+    fn get_input(&mut self) {
         let mut done = false;
         while !done {
-            println!("Player {} ({}), enter a coordinate.", 
+            let mut input = String::new();
+            println!("[Player {} - {}] Enter a coordinate.", 
             //    self.active_player.id, self.active_player.symbol);
                 self.players[self.active_player].id, self.players[self.active_player].symbol);
             io::stdin().read_line(&mut input).unwrap();
             input = String::from(input.trim_end().to_uppercase());
-            println!("input was \"{}\"", input);
+            //println!("input was \"{}\"", input);
 
             // need to get coordinate
+            let re = Regex::new("^[0-3],[0-3]$").unwrap();
+            if !re.is_match(&input) {
+                println!("Invalid coordinate. Example: 1,1 or 2,3");
+                continue;
+            }
+
+            let input_split = input.split(",");
+            let coord_parts: Vec<&str> = input_split.collect();
+            let x:usize = coord_parts[0].parse().unwrap();
+            let y:usize = coord_parts[1].parse().unwrap();
+            //println!("Parsed x,y = {},{}", x, y);
 
             // check if cell is empty
-
-            // add player's response to board
-
-            match input.as_str() {
-                "X" => println!("X"),
-                "O" => println!("O"),
-                _ => println!("Invalid coordinate. Example: 1,1 or 2,3"),
+            match self.board[x-1][y-1].state {
+                CellState::Empty => self.board[x-1][y-1].state = self.players[self.active_player].symbol,
+                _ => {
+                    println!("That spot already has something in it! Try again.");
+                    continue;
+                }
             }
 
             done = true;
