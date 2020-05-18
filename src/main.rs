@@ -6,6 +6,7 @@ const BOARD_SIZE: usize = 3;
 
 #[derive(Copy, Clone)]
 #[derive(PartialEq)]
+#[derive(Debug)]
 enum CellState {
     Empty,
     X,
@@ -93,7 +94,7 @@ impl Game {
             let (x, y) = split_input_coordinate(&input);
 
             if !self.place_symbol_if_target_cell_available(y-1, x-1) {
-                println!("That coordinate already is already taken! Try again.");
+                println!("That coordinate is already taken! Try again.");
                 continue;
             }
 
@@ -360,6 +361,27 @@ fn next_player_switches_from_0_to_1() {
     game.active_player = 1;
     game.next_player();
     assert_eq!(0, game.active_player);
+}
+
+#[test]
+fn place_symbol_if_target_cell_available_should_do_it_if_so() {
+    let mut game = Game::new();
+    game.active_player = 0;
+    game.players[0].symbol = CellState::X;
+    let was_available = game.place_symbol_if_target_cell_available(0, 0);
+    assert_eq!(CellState::X, game.board[0][0].state);
+    assert_eq!(true, was_available);
+}
+
+#[test]
+fn place_symbol_if_target_cell_available_should_return_false_if_not_available() {
+    let mut game = Game::new();
+    game.active_player = 0;
+    game.players[0].symbol = CellState::X;
+    game.board[0][0].state = CellState::O;
+    let was_available = game.place_symbol_if_target_cell_available(0, 0);
+    assert_eq!(CellState::O, game.board[0][0].state);
+    assert_eq!(false, was_available);
 }
 
 
