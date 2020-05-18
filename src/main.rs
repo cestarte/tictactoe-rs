@@ -2,8 +2,7 @@ use std::fmt;
 use std::io;
 //use std::io::prelude::*;
 
-const BOARD_WIDTH: usize = 3;
-const BOARD_HEIGHT: usize = 3;
+const BOARD_SIZE: usize = 3;
 
 #[derive(Copy, Clone)]
 enum CellState {
@@ -22,9 +21,16 @@ impl fmt::Display for CellState {
     }
 }
 
+struct Player {
+    id: u8,
+    symbol: CellState,
+}
 
 struct Game {
-    board: [[Tile; BOARD_WIDTH]; BOARD_HEIGHT]
+    board: [[Tile; BOARD_SIZE]; BOARD_SIZE],
+    //active_player: Player,
+    active_player: usize,
+    players: [Player; 2],
 }
 
 #[derive(Copy, Clone)]
@@ -32,7 +38,6 @@ struct Tile {
     row: u8,
     col: u8,
     state: CellState,
-    active_player: u8,
 }
 
 impl Game {
@@ -42,24 +47,33 @@ impl Game {
                 row: 0,
                 col: 0,
                 state: CellState::Empty,
-                active_player: 1,
-            }; BOARD_WIDTH]; BOARD_HEIGHT]
+            }; BOARD_SIZE]; BOARD_SIZE],
+            players: [Player {
+                id: 1,
+                symbol: CellState::X,
+            }, Player {
+                id: 2,
+                symbol: CellState::O,
+            }],
+
+            //active_player: players[0],
+            active_player: 0,
         };
 
         game
     }
 
     fn print(&self) {
-        for y in 0..BOARD_HEIGHT {
+        for y in 0..BOARD_SIZE {
             if y==0 {
                 print!("   ");
-                for i in 0..BOARD_WIDTH {
+                for i in 0..BOARD_SIZE {
                     print!("{}  ", i+1);
                 }
                 print!("\n");
             }
 
-            for x in 0..BOARD_WIDTH {
+            for x in 0..BOARD_SIZE {
                 if x == 0 {
                     print!("{}  ", y+1);
                 }
@@ -71,13 +85,39 @@ impl Game {
 
     fn get_input(&self) {
         let mut input = String::new();
-        io::stdin().read_line(&mut input).unwrap();//.expect("Failed to read user input");
-        println!("input was \"{}\"", input.trim_end());
-        match input.as_str() {
-            "X" => println!("X"),
-            "O" => println!("O"),
-            _ => println!("unknown"),
+        let mut done = false;
+        while !done {
+            println!("Player {} ({}), enter a coordinate.", 
+            //    self.active_player.id, self.active_player.symbol);
+                self.players[self.active_player].id, self.players[self.active_player].symbol);
+            io::stdin().read_line(&mut input).unwrap();
+            input = String::from(input.trim_end().to_uppercase());
+            println!("input was \"{}\"", input);
+
+            // need to get coordinate
+
+            // check if cell is empty
+
+            // add player's response to board
+
+            match input.as_str() {
+                "X" => println!("X"),
+                "O" => println!("O"),
+                _ => println!("Invalid coordinate. Example: 1,1 or 2,3"),
+            }
+
+            done = true;
         }
+    }
+
+    fn take_turn(&mut self) {
+        self.print();
+        self.get_input();
+    }
+
+    fn next_player(&mut self) {
+        self.active_player = if self.active_player == 0 { 1 } else { 0 };
+        //self.active_player = if self.active_player.id == self.players[0].id { self.players[1] } else { self.players[0] };
     }
 
     fn is_over(&self) -> bool {
@@ -91,16 +131,17 @@ impl Game {
 
 
 fn main() {
-    let game = Game::new();
+    let mut game = Game::new();
     //game.print();
 
     let mut done = false;
     while !done {
-        game.print();
-        game.get_input();
+        game.take_turn();
 
         if game.is_over() {
             done = true;
+        } else {
+            game.next_player();
         }
     }
     
