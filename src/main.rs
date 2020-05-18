@@ -243,3 +243,84 @@ fn main() {
         }
     }
 }
+
+#[test]
+fn horizontal_win_top() {
+    let mut game = Game::new();
+    game.board[0][0].state = CellState::O;
+    game.board[0][1].state = CellState::O;
+    game.board[0][2].state = CellState::O;
+
+    assert_eq!(true, game.horizontal_win());
+}
+
+#[test]
+fn horizontal_win_middle() {
+    let mut game = Game::new();
+    game.board[1][0].state = CellState::O;
+    game.board[1][1].state = CellState::O;
+    game.board[1][2].state = CellState::O;
+
+    assert_eq!(true, game.horizontal_win());
+}
+
+#[test]
+fn horizontal_win_bottom() {
+    let mut game = Game::new();
+    game.board[2][0].state = CellState::O;
+    game.board[2][1].state = CellState::O;
+    game.board[2][2].state = CellState::O;
+
+    assert_eq!(true, game.horizontal_win());
+}
+
+#[test]
+fn vertical_win_left() {
+    let mut game = Game::new();
+    game.board[0][0].state = CellState::O;
+    game.board[1][0].state = CellState::O;
+    game.board[2][0].state = CellState::O;
+
+    assert_eq!(true, game.vertical_win());
+}
+
+#[test]
+fn vertical_win_middle() {
+    let mut game = Game::new();
+    game.board[0][1].state = CellState::O;
+    game.board[1][1].state = CellState::O;
+    game.board[2][1].state = CellState::O;
+
+    assert_eq!(true, game.vertical_win());
+}
+
+#[test]
+fn vertical_win_right() {
+    let mut game = Game::new();
+    game.board[0][2].state = CellState::O;
+    game.board[1][2].state = CellState::O;
+    game.board[2][2].state = CellState::O;
+
+    assert_eq!(true, game.vertical_win());
+}
+
+#[test]
+fn diagonal_win_top_left_to_bottom_right() {
+    let mut game = Game::new();
+    game.board[0][0].state = CellState::O;
+    game.board[1][1].state = CellState::O;
+    game.board[2][2].state = CellState::O;
+
+    assert_eq!(true, game.diagonal_win_top_left_to_bottom_right());
+}
+
+#[test]
+fn diagonal_win_top_right_to_bottom_left() {
+    let mut game = Game::new();
+    game.board[0][2].state = CellState::O;
+    game.board[1][1].state = CellState::O;
+    game.board[2][0].state = CellState::O;
+
+    assert_eq!(true, game.diagonal_win_top_right_to_bottom_left());
+}
+
