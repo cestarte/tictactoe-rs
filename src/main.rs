@@ -5,6 +5,7 @@ use regex::Regex;
 const BOARD_SIZE: usize = 3;
 
 #[derive(Copy, Clone)]
+#[derive(PartialEq)]
 enum CellState {
     Empty,
     X,
@@ -39,7 +40,7 @@ struct Tile {
 
 impl Game {
     fn new() -> Game  {
-        let mut game = Game{
+        let game = Game{
             board: [[Tile{
                 state: CellState::Empty,
             }; BOARD_SIZE]; BOARD_SIZE],
@@ -90,7 +91,7 @@ impl Game {
             // was the input a valid coordinate?
             let re = Regex::new("^[0-3],[0-3]$").unwrap();
             if !re.is_match(&input) {
-                println!("Invalid coordinate. Example: 1,1 or 2,3");
+                println!("Invalid coordinate. Example: x,y like 2,3");
                 continue;
             }
 
@@ -101,8 +102,8 @@ impl Game {
             let y:usize = coord_parts[1].parse().unwrap();
 
             // check if cell is empty
-            match self.board[x-1][y-1].state {
-                CellState::Empty => self.board[x-1][y-1].state = self.players[self.active_player].symbol,
+            match self.board[y-1][x-1].state {
+                CellState::Empty => self.board[y-1][x-1].state = self.players[self.active_player].symbol,
                 _ => {
                     println!("That coordinate already is already taken! Try again.");
                     continue;
@@ -114,7 +115,10 @@ impl Game {
     }
 
     fn take_turn(&mut self) {
+        println!();
+        println!();
         self.print();
+        println!();
         self.get_input();
     }
 
@@ -123,12 +127,73 @@ impl Game {
     }
 
     fn is_over(&self) -> bool {
-        // TODO check for winner
-        //let filtered = self.board.filter(|&filteredTiles| filteredTiles.CellState == CellState::O);
-        //    false
+        if self.horizontal_win() || self.vertical_win() || self.diagonal_win() {
+            return true;
+        }
         
-        true
+        false
     }
+
+    fn horizontal_win(&self) -> bool {
+        let mut to_match: CellState = CellState::Empty;
+        for y in 0..BOARD_SIZE {
+            for x in 0..BOARD_SIZE {
+                if x == 0 {
+                    // set the symbol we need to match
+                    to_match = self.board[y][x].state;
+                    //println!("Horizontal cells need to match \'{}\'", to_match);
+                    // ..however, if it's empty, just ignore the rest of the row
+                    if to_match == CellState::Empty {
+                        //println!("The first horizontal cell is empty.");
+                        break;
+                    }
+                } else if to_match != self.board[y][x].state {
+                    // for all the row after the first cell, 
+                    // they must match or ignore the rest of the row
+                    //println!("{} at {},{} does not match {}", self.board[y][x].state, y,x, to_match);
+                    break;
+                } else if x==BOARD_SIZE-1 {
+                    println!("There is a horizontal win!");
+                    return true;
+                }
+            }
+        }
+
+        false
+    }
+
+    fn vertical_win(&self) -> bool {
+        let mut to_match: CellState = CellState::Empty;
+        for x in 0..BOARD_SIZE {
+            for y in 0..BOARD_SIZE {
+                if y == 0 {
+                    // set the symbol we need to match
+                    to_match = self.board[y][x].state;
+                    //println!("Vertical cells need to match \'{}\'", to_match);
+                    // ..however, if it's empty, just ignore the rest of the col
+                    if to_match == CellState::Empty {
+                        //println!("The first cell is empty.");
+                        break;
+                    }
+                } else if to_match != self.board[y][x].state {
+                        // for all the row after the first cell, 
+                        // they must match or ignore the rest of the col
+                        //println!("{} at {},{} does not match {}", self.board[y][x].state, y,x, to_match);
+                        break;
+                } else if y==BOARD_SIZE-1 {
+                    println!("There is a vertical win!");
+                    return true;
+                }
+            }
+        }
+
+        false
+    }
+
+    fn diagonal_win(&self) -> bool {
+        false
+    }
+
 }
 
 fn main() {
@@ -140,6 +205,7 @@ fn main() {
 
         if game.is_over() {
             done = true;
+            game.print();
         } else {
             game.next_player();
         }
