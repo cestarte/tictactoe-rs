@@ -83,8 +83,8 @@ impl Game {
         let mut done = false;
         while !done {
             let mut input = String::new();
-            println!("[Player {} - {}] Enter a coordinate.", 
-                self.players[self.active_player].id, self.players[self.active_player].symbol);
+            println!("[Player \'{}\'] Enter a coordinate:", 
+                self.players[self.active_player].symbol);
             io::stdin().read_line(&mut input).unwrap();
             input = String::from(input.trim_end().to_uppercase());
 
@@ -191,7 +191,42 @@ impl Game {
     }
 
     fn diagonal_win(&self) -> bool {
-        false
+        return self.diagonal_win_top_left_to_bottom_right() || self.diagonal_win_top_right_to_bottom_left();
+    }
+
+    fn diagonal_win_top_left_to_bottom_right(&self) -> bool {
+        let to_match: CellState = self.board[0][0].state;
+        if to_match == CellState::Empty {
+            return false;
+        }
+
+        for pos in 0..BOARD_SIZE {
+            if self.board[pos][pos].state != to_match {
+                return false;
+            }
+        }
+
+        println!("There was a diagonal win! (top left to bottom right)");
+        true
+    }
+
+    // formula: top right (3,1)  x-1,y+1 (2,2)  x-1,y+1 (1,3)
+    fn diagonal_win_top_right_to_bottom_left(&self) -> bool {
+        let to_match: CellState = self.board[0][BOARD_SIZE-1].state;
+        if to_match == CellState::Empty {
+            return false;
+        }
+        
+        let mut y:usize = 0;
+        for x in (0..BOARD_SIZE).rev() {
+            if self.board[y][x].state != to_match {
+                return false;
+            }
+            y += 1;
+        }
+
+        println!("There was a diagonal win! (top right to bottom left)");
+        true
     }
 
 }
