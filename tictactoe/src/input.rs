@@ -2,6 +2,7 @@ use std::io;
 use regex::Regex;
 extern crate game;
 use game::components::Game;
+use game::components::BOARD_SIZE;
 
 pub fn get_input(g: &mut Game) {
     let mut done = false;
@@ -29,8 +30,9 @@ pub fn get_input(g: &mut Game) {
 }
 
 pub fn is_input_format_acceptable(input: &str) -> bool {
-    let re = Regex::new("^[0-3],[0-3]$").unwrap();
-    re.is_match(&input)
+    let reg_str = format!("^[0-{}],[0-{}]$", BOARD_SIZE, BOARD_SIZE);
+    let reg_exp = Regex::new(reg_str.as_str()).unwrap();
+    reg_exp.is_match(&input)
 }
 
 pub fn split_input_coordinate(input: &str) -> (usize, usize) {
