@@ -1,3 +1,4 @@
 /target
 game/target
 tictactoe/target
+*.log

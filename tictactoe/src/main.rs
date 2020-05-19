@@ -4,7 +4,18 @@ use game::components::BOARD_SIZE;
 mod input;
 mod input_test;
 
+#[allow(unused_imports)]
+use log::{debug, error, info, trace, warn };
+
 fn main() {
+    let _logger_init_result = setup_logger().expect("[ERROR] Failed to initialize logging.");
+    info!("App starting up!");
+    ctrlc::set_handler(move || {
+        debug!("Received Ctrl+C. Shutting down..");
+        std::process::exit(0);
+    }).expect("Error setting Ctrl-C handler");
+    debug!("App init complete.");
+
     let mut game = Game::new();
 
     let mut done = false;
@@ -14,7 +25,9 @@ fn main() {
         if game.is_over() {
             done = true;
             print_board(&game);
+            info!("Game over!");
         } else {
+            trace!("Player {}'s turn is over. Next player!", game.active_player+1);
             game.next_player();
         }
     }
@@ -46,4 +59,23 @@ fn take_turn(game: &mut Game) {
     print_board(&game);
     println!();
     input::get_input(game);
+}
+
+
+fn setup_logger() -> Result<(), fern::InitError> {
+    fern::Dispatch::new()
+        .format(|out, message, record| {
+            out.finish(format_args!(
+                "{}[{}][{}] {}",
+                chrono::Local::now().format("[%Y-%m-%d][%H:%M:%S]"),
+                record.target(),
+                record.level(),
+                message
+            ))
+        })
+        .level(log::LevelFilter::max())
+        //.chain(std::io::stdout())
+        .chain(fern::log_file("output.log")?)
+        .apply()?;
+    Ok(())
 }
