@@ -2,9 +2,8 @@ use std::io;
 use regex::Regex;
 extern crate game;
 use game::components::Game;
-//use game::components::Game;
 
-pub fn get_input(mut g: &mut Game) {
+pub fn get_input(g: &mut Game) {
     let mut done = false;
     while !done {
         let mut input = String::new();
@@ -20,7 +19,7 @@ pub fn get_input(mut g: &mut Game) {
 
         let (x, y) = split_input_coordinate(&input);
 
-        if !g.place_symbol_if_target_cell_available(y-1, x-1) {
+        if !g.place_symbol_if_target_cell_available(x-1, y-1) {
             println!("That coordinate is already taken! Try again.");
             continue;
         }
@@ -39,6 +38,5 @@ pub fn split_input_coordinate(input: &str) -> (usize, usize) {
     let coord_parts: Vec<&str> = input_split.collect();
     let x:usize = coord_parts[0].parse().unwrap();
     let y:usize = coord_parts[1].parse().unwrap();
-
     (x, y)
 }
