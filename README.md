@@ -2,5 +2,6 @@
 Learning rust by making a simple game.
 
 # Next steps
-  * unit tests for game logic
-  * break logic and game objects apart into modules
+  * replace println!() in game logic w/ logging module
+  * move println!() calls into new 'display' module
+  * consider replacing display module with SDL
