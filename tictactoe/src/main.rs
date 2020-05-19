@@ -75,7 +75,8 @@ fn setup_logger() -> Result<(), fern::InitError> {
         })
         .level(log::LevelFilter::max())
         //.chain(std::io::stdout())
-        .chain(fern::log_file("output.log")?)
+        //.chain(fern::log_file("program.log")?)
+        .chain(fern::DateBased::new("log_", "%Y-%m-%d.log"))
         .apply()?;
     Ok(())
 }
