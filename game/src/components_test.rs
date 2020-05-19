@@ -1,7 +1,6 @@
-//use pub components;
+//pub mod components;
 //use components::Game;
 //use components::CellState;
-//pub mod components_test {
 
 #[test]
 pub fn horizontal_win_top() {
@@ -126,5 +125,3 @@ pub fn place_symbol_if_target_cell_available_should_return_false_if_not_availabl
     assert_eq!(CellState::O, game.board[0][0].state);
     assert_eq!(false, was_available);
 }
-
-//}
