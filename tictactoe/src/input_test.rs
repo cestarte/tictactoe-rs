@@ -1,4 +1,4 @@
-mod input;
+use main::input;
 
 #[test]
 fn is_input_format_acceptable_test() {

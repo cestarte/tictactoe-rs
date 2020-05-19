@@ -1,6 +1,5 @@
-//pub mod components;
-//use components::Game;
-//use components::CellState;
+use crate::components::Game;
+use crate::components::CellState;
 
 #[test]
 pub fn horizontal_win_top() {
