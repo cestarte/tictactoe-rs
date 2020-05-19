@@ -1,0 +1,1 @@
+C:\Users\5am\source\repos\tictactoe-rs\game\target\debug\libgame.rlib: C:\Users\5am\source\repos\tictactoe-rs\game\src\components.rs C:\Users\5am\source\repos\tictactoe-rs\game\src\components_test.rs C:\Users\5am\source\repos\tictactoe-rs\game\src\lib.rs
