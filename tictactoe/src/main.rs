@@ -2,7 +2,7 @@ extern crate game;
 use game::components::Game;
 use game::components::BOARD_SIZE;
 mod input;
-//mod input_test;
+mod input_test;
 
 fn main() {
     let mut game = Game::new();

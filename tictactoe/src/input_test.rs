@@ -1,4 +1,4 @@
-use main::input;
+use crate::input::*;
 
 #[test]
 fn is_input_format_acceptable_test() {
